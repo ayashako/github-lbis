@@ -1,0 +1,71 @@
+Docker:
+Containerization
+Docker Intro
+Installation
+Docker command line [cont vs images]
+Imperative method
+Declarative method - Dockerfile / Docker-compose
+
+Docker practice:
+!!! Important Commands !!!
+1: sudo usermod -aG docker $USER    jab b hum new ubuntu run kr k docker run krty hain to permissions nai hoti. docker ps nahi run hogi.hum docker group permi      me                    add krty hain is command se.
+2: docker ps              yeh running container dikhay ga
+3: docker ps -a           yeh tamam cont dikhay ga.crashed.exited wgera
+4: docker images          yeh hamary pass jitne b images hain wo show kry ga
+5: docker pull nginx/ubuntu/debien etc   yeh docker.hub se images pull kry ga
+  !!!   Important   !!!
+jab b container install kryn ge   agr to web ka container hai to ports ba host machine k sath map krna hain
+5b: sudo ss -tulnp | grep 8080   to check a specific port ifd its occupied or not
+6: docker run -p 80:80 nginx    yeh tab tak running me hogi jab tak hum exit nai hoty. exit hone k baad band ho jay ga
+7: docker run -d  --name  ayaz-docker  -p 80:80 nginx    ab yeh exit hone k baad b running me rahy ga
+8: docker rm -f <container name>
+9: watch docker ps        is se yeh continous watch kry ga
+10: docker stats          yeh command cpu wgera sab resources ki consuming show kry ga
+11: docker exec -it   <name>  bash   container k andr jane ki command
+
+___________________________________________________________________________
+
+
+!!! Network !!!
+
+Network Part:
+docker network ls                yeh command hai docker me networks dekhne k liye, yaad rahy k containers apas me baat nahi kr sakty even k wo same network
+sudo docker network create <docker-testing>   yeh hai network create krne k liye. our cont ko network ka part bnay ge.
+docker network connect <network_name> <container_name>    running cont ko network se connect krne k liye command.
+
+
+
+_____________________________________________________________________________
+
+!!! Volume  !!!    
+
+sudo docker volume ls       yeh volumes ko dekhne k liye.
+
+container k sab details is folder me hain cd /var/lib/docker        yaha network,container,images ahr qism ki details hongi.
+sudo docker volume create   <name>
+sudo docker volume ls    volumes create krty hain phir isko use krne k liye attach b krna hota hai.
+sudo docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=root -v my_data_volume:/var/lib/mysql -p 3306:3306 mysql      Hum multiple cont ek volume k sath attach kr sakty hain.
+
+
+!!! Docker Bind Mount !!!
+
+yeh kafi tricky hai. basically is me ek centralized folder ban jata hai host machine me. container me app ka folder hum isi folder k sath bind krty hain, jis k baad jo b file hum is folder me bnay ge wo shared hogi. jaisa k hum ne isko html k path diya hua, to web ki file yeh yahi se uthay ga. mene jo lab perform ki:
+mkdir  storage
+/storage   mkdir app_01_data
+/storage   mkdir app_01_database_data
+/storage   mkdir app_02_data
+/storage   mkdir app_02_database_data     yeh 4 folders create kiye ab containers create kiye
+sudo ss -tulnp | grep 8080   port ki occupation dekhne k liye
+
+sudo docker run -d  --name  nginx01  -p 8081:8081   -v /home/ubuntu/storage/app_01_data:/usr/share/nginx/html  nginx
+/home/ubuntu/storage/app_01_data   is folder me gya our files bnai, phir container me gya
+sudo docker exec -it nginx01 bash
+/usr/share/nginx/html      yaha gya.file create ki our yeh ab host machine me b create ho gai.
+
+sudo docker run -d  --name  nginx02  -p 8082:8082   -v /home/ubuntu/storage/app_02_data:/usr/share/nginx/html  nginx
+/home/ubuntu/storage/app_02_data   is folder me gya our files bnai, phir container me gya
+sudo docker exec -it nginx02 bash
+/usr/share/nginx/html      yaha gya.file create ki our yeh ab host machine me b create ho gai.
+
+
+

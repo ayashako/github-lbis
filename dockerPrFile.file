@@ -68,4 +68,62 @@ sudo docker exec -it nginx02 bash
 /usr/share/nginx/html      yaha gya.file create ki our yeh ab host machine me b create ho gai.
 
 
+!!! Docker Bind Mount !!!
+
+yeh kafi tricky hai. basically is me ek centralized folder ban jata hai host machine me. container me app ka folder hum isi folder k sath bind krty hain, jis k baad jo b file hum is folder me bnay ge wo shared hogi. jaisa k hum ne isko html k path diya hua, to web ki file yeh yahi se uthay ga. mene jo lab perform ki:
+mkdir  storage
+/storage   mkdir app_01_data
+/storage   mkdir app_01_database_data
+/storage   mkdir app_02_data
+/storage   mkdir app_02_database_data     yeh 4 folders create kiye ab containers create kiye
+sudo ss -tulnp | grep 8080   port ki occupation dekhne k liye
+
+sudo docker run -d  --name  nginx01  -p 8081:8081   -v /home/ubuntu/storage/app_01_data:/usr/share/nginx/html  nginx
+/home/ubuntu/storage/app_01_data   is folder me gya our files bnai, phir container me gya
+sudo docker exec -it nginx01 bash
+/usr/share/nginx/html      yaha gya.file create ki our yeh ab host machine me b create ho gai.
+
+sudo docker run -d  --name  nginx02  -p 8082:8082   -v /home/ubuntu/storage/app_02_data:/usr/share/nginx/html  nginx
+/home/ubuntu/storage/app_02_data   is folder me gya our files bnai, phir container me gya
+sudo docker exec -it nginx02 bash
+sudo apt update && sudo apt install -y vim
+
+/usr/share/nginx/html      yaha gya.file create ki our yeh ab host machine me b create ho gai.
+
+
+_____________________________________________________________________________________________
+
+!!! Dockerfile !!!   custom image building.
+ 
+hum iski file create krty hain. basic configs k sath hai
+mv Dockerfile  custom_image/
+mkdir custom_image ---> cd custom_image        
+sudo vim Dockerfile
+
+# Use official ubuntu image
+FROM ubuntu
+
+# Remove default nginx website
+RUN apt update
+RUN apt install nginx -y
+
+# Copy your static files to nginx folder
+
+
+# Expose port 80 & 8080
+EXPOSE 80
+EXPOSE 8080
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
+
+
+abhi file prepare ki hai. build nahi
+sudo docker images
+###
+###
+sudo docker build -t my_nginx_app:v1 . 
+
+agr file name dena hai to command aise hai.
+sudo docker build -t my_nginx_app:v1 -f Dockerfile_nginx_image .
 
